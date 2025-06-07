@@ -1,0 +1,115 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct no{
+    int valor;
+    struct no * esq;
+    struct no * dir;
+}t_no;
+
+
+typedef struct{
+    t_no * raiz;
+}t_abb;
+
+t_no * constroi_no(int);
+void inicia_abb (t_abb *);
+int abb_vazia (t_abb *);
+void insere (int , t_abb *);
+void imprime (t_abb *);
+int busca(int, t_abb *);
+
+int main()
+{
+    
+
+    return 0;
+}
+
+t_no * constroi_no(int i){
+    t_no * novo = (t_no *) malloc(sizeof(t_no));
+    if(novo != NULL){
+        novo->valor = i;
+        novo->dir = NULL;
+        novo->esq = NULL;
+    }
+    return novo;
+}
+
+void inicia_abb(t_abb *abb){
+    abb->raiz = NULL;
+}
+
+int abb_vazia(t_abb *abb){
+    return abb->raiz == NULL;
+}
+
+void insere_rec(t_no *novo, t_no *atual){
+    if(novo->valor > atual->valor){ //vai para a direita
+        if(atual->dir == NULL){
+            atual->dir = novo;
+        }
+        else{
+            insere_rec(novo,atual->dir);
+        }
+    }
+    else{ //vai para a esquerda
+        if(atual->esq == NULL){
+            atual->esq = novo;
+        }
+        else{
+            insere_rec(novo, atual->esq);
+        }
+    }
+}
+
+void insere(int i, t_abb * abb){
+    t_no * novo = constroi_no(i);
+    if(abb_vazia(abb)){
+        abb->raiz = novo;
+    }
+    else{
+        insere_rec(novo, abb->raiz);
+    }
+}
+
+void imprime_rec(t_no * atual){
+    if(atual != NULL){
+        imprime_rec(atual->esq);
+        printf("%d ", atual->valor);
+        imprime_rec(atual->dir);
+    }
+}
+
+void imprime(t_abb *abb){
+    if(abb_vazia(abb)){
+        printf("Arvore Vazia \n");
+    }
+    else{
+        imprime_rec(abb->raiz);
+    }
+}
+
+int busca_rec(int x, t_no * atual){
+    if(atual == NULL) return 0;
+    if(atual->valor == x) return 1; //achooo
+    if(x > atual->valor) return busca_rec(x, atual->dir);
+    return busca_rec(x, atual->esq);
+}
+
+int busca(int x, t_abb *abb){
+    if(abb_vazia(abb)) return 0;
+    return busca_rec(x, abb->raiz);
+}
+
+int conta_x_rec(int x, t_no * atual){
+    if(atual == NULL) return 0;
+    if(atual->valor == x) return 1 + conta_x_rec(x, atual->esq);
+    if(x > atual->valor) return conta_x_rec(x, atual->dir);
+    else return busca_rec(x, atual->esq);
+}
+
+int conta_x(int x, t_abb *abb){
+    if(abb_vazia(abb)) return 0;
+    conta_x_rec(x, abb->raiz);
+}
